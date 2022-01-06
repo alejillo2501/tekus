@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { HomePage } from './home.page';
 
-import { HomePageRoutingModule } from './home-routing.module';
+import { IonicModule } from '@ionic/angular';
+
+import { InfobitcointPageRoutingModule } from './infobitcoint-routing.module';
+
+import { InfobitcointPage } from './infobitcoint.page';
 
 import { Services } from '../config/services';
 
@@ -13,9 +15,9 @@ import { Services } from '../config/services';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    InfobitcointPageRoutingModule
   ],
-  declarations: [HomePage],
+  declarations: [InfobitcointPage],
   providers: [Services]
 })
-export class HomePageModule {}
+export class InfobitcointPageModule {}

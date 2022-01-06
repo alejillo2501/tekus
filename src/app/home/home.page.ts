@@ -1,12 +1,95 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Services } from '../config/services';
+import { avance, basic } from '../config/type';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit{
 
-  constructor() {}
+  dateNow: any;
+  currency:any;
+  viewBitcoint:boolean = false;
+  time:any = 59;
+  intervalTime:any;
+  lastDate:any;
+  listLastFifteenDays:any = [];
+  viewLoadList: boolean = true;
+
+  constructor(
+    private apirest: Services,
+    public router: Router
+  ) {
+    this.loadDay();
+    this.loadLastDays();
+  }
+
+  ngOnInit() {
+
+    this.intervalTime = setInterval(() => {
+      if(this.time == 0){
+        this.time = 59;
+        this.loadDay();
+      }else{
+        this.time--;
+      }
+    },1000)
+
+    
+  }
+
+  async loadDay(){
+    this.viewBitcoint = false;
+    const response = await this.apirest.bitcointToday().then((resp:basic) => {
+      console.log('RESPUESTA: ',resp);
+
+      
+      if(resp.status == 200){
+        const result:any = resp.data;
+        localStorage.setItem('lastBitCointDay', JSON.stringify(resp));
+        this.dateNow = result.amount;
+        this.currency = result.currency;
+        this.lastDate = resp.date;
+      }else{
+        const lastStorage = JSON.parse(localStorage.getItem('lastBitCointDay'));
+        const result:any = lastStorage.data;
+        this.dateNow = result.amount;
+        this.currency = result.currency;
+        this.lastDate = lastStorage.date;
+      }
+
+      this.viewBitcoint = true;
+    }).catch((err) => {
+      this.viewBitcoint = true;
+      console.log('Error en service TODAY: ', err);
+      const lastStorage = JSON.parse(localStorage.getItem('lastBitCointDay'));
+      const result:any = lastStorage.data;
+      this.dateNow = result.amount;
+      this.currency = result.currency;
+      this.lastDate = lastStorage.date;
+    })
+
+    
+    
+  }
+
+  async loadLastDays(){
+    this.viewLoadList = false;
+    await this.apirest.bitcointLastFifteenDays().then((resp:avance) => {
+      console.log('RESPUESTA ULTIMOS 15 DIAS: ', resp.data.length);
+      this.listLastFifteenDays = resp.data;
+      this.viewLoadList = true;
+    }).catch((err) => {
+      console.log('Error cargando BitCoint últimos 15 días: ', err);
+      this.viewLoadList = true;
+    })
+  }
+
+  async loadByDate(item){
+    this.router.navigate(['infobitcoint/', item]);
+  }
 
 }

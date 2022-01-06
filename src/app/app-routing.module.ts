@@ -11,6 +11,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'infobitcoint/:item',
+    loadChildren: () => import('./infobitcoint/infobitcoint.module').then( m => m.InfobitcointPageModule)
+  },
 ];
 
 @NgModule({
